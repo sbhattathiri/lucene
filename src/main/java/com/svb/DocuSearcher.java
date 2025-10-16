@@ -16,11 +16,13 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
@@ -72,7 +74,7 @@ public class DocuSearcher {
         IndexSearcher searcher = new IndexSearcher(reader);
         StandardAnalyzer analyzer = new StandardAnalyzer();
 
-        QueryParser parser = new QueryParser("content", analyzer);
+        // QueryParser parser = new QueryParser("content", analyzer);
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter search query (or 'quit' to exit):");
@@ -85,7 +87,14 @@ public class DocuSearcher {
                 break;
             }
 
-            Query query = parser.parse(queryStr);
+            // Replace QueryParser with direct query construction
+            // Query query = parser.parse(queryStr);
+            Query query = new TermQuery(new Term("content", queryStr.toLowerCase()));
+            // Or for phrase search:
+            // Query query = new PhraseQuery("content", queryStr.split("\\s+"));
+            // Or for wildcard:
+            // Query query = new WildcardQuery(new Term("content", "*" + queryStr + "*"));
+
             TopDocs results = searcher.search(query, 10);
 
             System.out.println("Found " + results.totalHits + " results:");
